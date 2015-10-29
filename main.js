@@ -28,8 +28,20 @@ var App = React.createClass({
 	get: function() {
 		this.setState({'stoppedtime' : $('.timenow').html()});
 		var timelist = this.state.timelist;
-		timelist.unshift($('.timenow').html());
 		this.setState({'timelist' : timelist});
+		var time = $('.timenow').html()
+		var res = time.match(/\d{1,3}$/);
+		var text = '';
+		if( res < 100 || (res < 999 && res > 900) ){
+			text = 'You were sooo close (need to do better though)';
+		}else if( res == 0 ){
+			text = 'Congratulations!! Nothing will happen as promised!';
+		}
+		else{
+			text = 'So far away...';
+		}
+		timelist.unshift($('.timenow').html() + ' ' + text);
+		 
 	},
 	render: function(){
 		return (
