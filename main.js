@@ -27,9 +27,7 @@ var App = React.createClass({
 	},
 	get: function() {
 		this.setState({'stoppedtime' : $('.timenow').html()});
-		var timelist = this.state.timelist;
-		this.setState({'timelist' : timelist});
-		var time = $('.timenow').html()
+		var time = $('.timenow').html();
 		var res = time.match(/\d{1,3}$/);
 		var text = '';
 		if( res < 100 || (res < 999 && res > 900) ){
@@ -39,9 +37,12 @@ var App = React.createClass({
 		}
 		else{
 			text = 'So far away...';
+		}		
+		
+		if(this.state.timelist.length > 4){
+			this.state.timelist = [];
 		}
-		timelist.unshift($('.timenow').html() + ' ' + text);
-		 
+		this.state.timelist.unshift($('.timenow').html() + ' ' + text);
 	},
 	render: function(){
 		return (
