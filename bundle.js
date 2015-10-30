@@ -110,7 +110,7 @@ var App = React.createClass({
 
 	mixins: [TimerMixin],
 	getInitialState: function getInitialState() {
-		return { 'time': Date.now(), 'stoppedtime': '00:00:00', 'timelist': [], 'milies': '' };
+		return { 'time': Date.now(), 'stoppedtime': '00:00:00', 'timelist': [], 'milies': '', 'attempts': 20 };
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -127,10 +127,23 @@ var App = React.createClass({
 		this.setState({ 'time': dt.getHours() + " : " + dt.getMinutes() + " : " + dt.getSeconds() + " : " + dt.getMilliseconds() });
 	},
 	get: function get() {
+		this.state.attempts--;
 		this.setState({ 'stoppedtime': $('.timenow').html() });
-		var timelist = this.state.timelist;
-		timelist.unshift($('.timenow').html());
-		this.setState({ 'timelist': timelist });
+		var time = $('.timenow').html();
+		var res = time.match(/\d{1,3}$/);
+		var text = '';
+		if (res < 100 || res < 999 && res > 900) {
+			text = 'You were sooo close (need to do better though)';
+		} else if (res == 0) {
+			text = 'Congratulations!! Nothing will happen as promised!';
+		} else {
+			text = 'So far away...';
+		}
+
+		if (this.state.timelist.length > 4) {
+			this.state.timelist = [];
+		}
+		this.state.timelist.unshift($('.timenow').html() + ' ' + text);
 	},
 	render: function render() {
 		return React.createElement(
@@ -169,12 +182,18 @@ var App = React.createClass({
 					'div',
 					{ className: 'large-12 columns large-centered text-centered' },
 					React.createElement(
+						'h1',
+						null,
+						'Last attempt'
+					),
+					React.createElement(
 						'h2',
 						null,
 						this.state.stoppedtime
 					)
 				)
 			),
+			React.createElement(Attempt, { attempts: this.state.attempts }),
 			React.createElement(TimeList, { timelist: this.state.timelist })
 		);
 	}
@@ -193,11 +212,41 @@ var TimeList = React.createClass({
 		});
 		return React.createElement(
 			'div',
-			{ className: 'commentList' },
+			{ className: 'commentList text-centered' },
+			React.createElement(
+				'h2',
+				null,
+				'Attempt list'
+			),
 			commentNodes
 		);
 	}
 
+});
+
+var Attempt = React.createClass({
+	displayName: 'Attempt',
+
+	render: function render() {
+		return React.createElement(
+			'div',
+			{ className: 'row' },
+			React.createElement(
+				'div',
+				{ className: 'large-12 columns text-centered' },
+				React.createElement(
+					'h2',
+					null,
+					'Remaining attempts'
+				),
+				React.createElement(
+					'h3',
+					null,
+					this.props.attempts
+				)
+			)
+		);
+	}
 });
 
 var Time = React.createClass({
