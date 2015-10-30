@@ -12,7 +12,7 @@ var Link = ReactRouter.Link
 var App = React.createClass({
 	mixins: [TimerMixin],
 	getInitialState: function() {
-		return {'time' : Date.now(),'stoppedtime' : '00:00:00','timelist':[],'milies':''};
+		return {'time' : Date.now(),'stoppedtime' : '00:00:00','timelist':[],'milies':'','attempts':20};
 	},
 	componentDidMount: function() {
 		{this.get_time()}
@@ -26,6 +26,7 @@ var App = React.createClass({
 		this.setState({'time' : dt.getHours() + " : " + dt.getMinutes() + " : " + dt.getSeconds() + " : " + dt.getMilliseconds()});
 	},
 	get: function() {
+		this.state.attempts--;
 		this.setState({'stoppedtime' : $('.timenow').html()});
 		var time = $('.timenow').html();
 		var res = time.match(/\d{1,3}$/);
@@ -59,9 +60,11 @@ var App = React.createClass({
 				</div>
 				<div className="row">
 					<div className="large-12 columns large-centered text-centered">
+						<h1>Last attempt</h1>
 						<h2>{this.state.stoppedtime}</h2>
 					</div>
 				</div>
+				<Attempt attempts={this.state.attempts}></Attempt>
 				<TimeList timelist={this.state.timelist}></TimeList>
 			</div>
 		)
@@ -78,12 +81,26 @@ var TimeList = React.createClass({
 			);
 		});
     return (
-      <div className="commentList">
+      <div className="commentList text-centered">
+		<h2>Attempt list</h2>
         {commentNodes}
       </div>
     );
   }
 	
+});
+
+var Attempt = React.createClass({
+	render: function() {
+		return(
+			<div className="row">
+				<div className="large-12 columns text-centered">
+					<h2>Remaining attempts</h2>
+					<h3>{this.props.attempts}</h3>
+				</div>
+			</div>
+		);
+	}
 });
 
 var Time = React.createClass({
